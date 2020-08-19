@@ -1,14 +1,24 @@
-version: 1
-update_configs:
-  # Keep package.json (& lockfiles) secure and up-to-date,
-  # batching pull requests daily
-  - package_manager: "dotnet:nuget"
+# Basic set up for three package managers
+
+version: 2
+updates:
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "nuget"
     directory: "/"
-    update_schedule: "daily"
-    default_reviewers:
-    - "martins.vds"
-  - package_manager: "javascript"
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "martins.vds"
+    labels:
+      - "nuget dependencies".
+      
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
     directory: "/"
-    update_schedule: "daily"
-    default_reviewers:
-    - "martins.vds"
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "martins.vds"
+    labels:
+      - "npm dependencies"
