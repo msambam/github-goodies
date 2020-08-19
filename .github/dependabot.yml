@@ -1,11 +1,14 @@
----
-version: 2
-updates:
-  - package-ecosystem: "nuget"
+version: 1
+update_configs:
+  # Keep package.json (& lockfiles) secure and up-to-date,
+  # batching pull requests daily
+  - package_manager: "dotnet:nuget"
     directory: "/"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: npm
+    update_schedule: "daily"
+    default_reviewers:
+    - "martins.vds"
+  - package_manager: "javascript"
     directory: "/"
-    schedule:
-      interval: daily
+    update_schedule: "daily"
+    default_reviewers:
+    - "martins.vds"
