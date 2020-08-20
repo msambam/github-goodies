@@ -9,6 +9,7 @@ jobs:
   pre-deploy:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Extract Environment Name
         env:
           PR_HEAD: ${{ github.base_ref }}
