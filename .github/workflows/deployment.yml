@@ -6,18 +6,26 @@ on:
       - closed
 
 jobs:
-  extract-env-name:
+  pre-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Extract Environment Name
         env:
           PR_HEAD: ${{ github.base_ref }}
         run: echo "##[set-output name=environment;]$(echo ${PR_HEAD#refs/heads/} | tr / -)"
+      - name: Extract Text from Labels
+        uses: ./.github/actions/extract-text-from-labels
+        with:
+          pattern: ^deploy:([^$]+)$
+          group: 1
 
   deploy-to-qa:
-    needs: extract-env-name
+    needs: pre-deploy
     runs-on: ubuntu-latest
-    if: ${{ contains(needs.extract-env-name.outputs.environment, 'qa') }}
+    if: ${{ needs.pre-deploy.outputs.environment == 'qa' }}
+    strategy:
+      matrix:
+        applications: ${{ needs.pre-deploy.outputs.substrings }}
     steps:
     - name: Start deployment
       uses: bobheadxi/deployments@master
@@ -26,9 +34,11 @@ jobs:
         step: start
         token: ${{ secrets.GITHUB_TOKEN }}
         env: QA
-    - name: Deploy to QA 
+    - name: Deploy to QA
+      env:
+        APP: ${{ matrix.applications }}
       run: |
-        echo "Deploying to QA"
+        echo "Deploying to QA - $APP"
     - name: Update deployment status
       uses: bobheadxi/deployments@master
       if: always()
@@ -36,5 +46,4 @@ jobs:
         step: finish
         token: ${{ secrets.GITHUB_TOKEN }}
         status: ${{ job.status }}
-        deployment_id: ${{ steps.qa_deployment.outputs.deployment_id }}   
-  
+        deployment_id: ${{ steps.qa_deployment.outputs.deployment_id }}
