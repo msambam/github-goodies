@@ -26,5 +26,6 @@ jobs:
             const containsDeployLabels = labels.some(checkLabel)
 
             if(!containsDeployLabels){
-              core.setFailed("Deploymen labels are missing.");            
+              core.setFailed("Deploymen labels are missing.");
+            }         
   
