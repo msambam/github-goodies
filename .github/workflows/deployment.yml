@@ -6,18 +6,26 @@ on:
       - closed
 
 jobs:
-  extract-env-name:
+  deploy-to-qa:
     runs-on: ubuntu-latest
+    if: contains(github.base_ref, 'refs/heads/qa')
     steps:
-    - name: Extract Environment Name
-      id: get_env_name
-      env:
-        PR_HEAD: ${{ github.base_ref }}
-      run: echo "##[set-output name=environment;]$(echo ${PR_HEAD#refs/heads/} | tr / -)"
-
+    - name: Start deployment
+      uses: bobheadxi/deployments@master
+      id: qa_deployment
+      with:
+        step: start
+        token: ${{ secrets.GITHUB_TOKEN }}
+        env: QA
     - name: Deploy to QA 
-      if: steps.get_env_name.outputs.environment == 'qa'
       run: |
         echo "Deploying to QA"
-    
-
+    - name: Update deployment status
+      uses: bobheadxi/deployments@master
+      if: always()
+      with:
+        step: finish
+        token: ${{ secrets.GITHUB_TOKEN }}
+        status: ${{ job.status }}
+        deployment_id: ${{ steps.qa_deployment.outputs.deployment_id }}   
+  
