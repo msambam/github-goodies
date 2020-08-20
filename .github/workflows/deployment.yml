@@ -15,7 +15,7 @@ jobs:
           PR_HEAD: ${{ github.base_ref }}
         run: echo "##[set-output name=environment;]$(echo ${PR_HEAD#refs/heads/} | tr / -)"
       - name: Extract Text from Labels
-        uses: .github/actions/extract-text-from-labels
+        uses: /.github/actions/extract-text-from-labels
         with:
           pattern: ^deploy:([^$]+)$
           group: 1
