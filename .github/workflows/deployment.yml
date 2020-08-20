@@ -1,0 +1,23 @@
+name: Deployment
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  extract-env-name:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Extract Environment Name
+      id: get_env_name
+      env:
+        PR_HEAD: ${{ github.base_ref }}
+      run: echo "##[set-output name=environment;]$(echo ${PR_HEAD#refs/heads/} | tr / -)"
+
+    - name: Deploy to QA 
+      if: steps.get_env_name.outputs.environment == 'qa'
+      run: |
+        echo "Deploying to QA"
+    
+
