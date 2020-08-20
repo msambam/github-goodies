@@ -3,8 +3,10 @@ name: eShopOnWeb Build and Test
 on:
   push:
     branches: [master,]
+    paths-ignore:
+      - '.github/**'
   pull_request:
-    branches: [master]
+    branches: [master, qa, prod]
 
 jobs:
   build:

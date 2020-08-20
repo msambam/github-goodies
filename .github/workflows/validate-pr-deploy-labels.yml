@@ -1,0 +1,31 @@
+name: Validate PR deployment labels
+
+on:
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+jobs:
+  check-labels:
+    runs-on: windows-2019
+    steps:
+      - name: Check labels
+        uses: actions/github-script@v2
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            // Fetch the list of labels attached to the PR that triggered the workflow
+            const opts = github.issues.listLabelsOnIssue.endpoint.merge({
+              ...context.repo,
+              issue_number: context.issue.number
+            });
+
+            const checkLabel = (label) => label.name.toLowerCase().includes("deploy:");
+
+            const labels = await github.paginate(opts);
+            const containsDeployLabels = labels.some(checkLabel)
+
+            if(!containsDeployLabels){
+              core.setFailed("Deploymen labels are missing.");
+            }         
+  

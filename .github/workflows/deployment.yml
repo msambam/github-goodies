@@ -6,9 +6,18 @@ on:
       - closed
 
 jobs:
-  deploy-to-qa:
+  extract-env-name:
     runs-on: ubuntu-latest
-    if: contains(github.base_ref, 'qa')
+    steps:
+      - name: Extract Environment Name
+        env:
+          PR_HEAD: ${{ github.base_ref }}
+        run: echo "##[set-output name=environment;]$(echo ${PR_HEAD#refs/heads/} | tr / -)"
+
+  deploy-to-qa:
+    needs: extract-env-name
+    runs-on: ubuntu-latest
+    if: ${{ contains(needs.extract-env-name.outputs.environment, 'qa') }}
     steps:
     - name: Start deployment
       uses: bobheadxi/deployments@master

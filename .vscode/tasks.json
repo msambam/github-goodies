@@ -1,0 +1,16 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build",
+			"path": ".github/actions/check-pr-labels/",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build",
+			"label": "npm: build - .github/actions/check-pr-labels",
+			"detail": "tsc"
+		}
+	]
+}
