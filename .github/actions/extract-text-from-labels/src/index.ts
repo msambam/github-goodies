@@ -11,7 +11,7 @@ async function run() {
 
     let substrings = extractTextFromLabels(labels, new RegExp(pattern), Number(group))
 
-    core.setOutput("result", substrings);
+    core.setOutput("substrings", substrings);
   } catch (error) {
     core.setFailed(error.message);
   }

@@ -13,7 +13,7 @@ inputs:
     default: "0"
     required: true
 outputs:
-  result: # id of output
+  substrings: # id of output
     description: 'The array of text extracted from labels'
 runs:
   using: 'node12'
