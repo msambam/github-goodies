@@ -8,7 +8,7 @@ on:
 jobs:
   deploy-to-qa:
     runs-on: ubuntu-latest
-    if: contains(github.base_ref, 'refs/heads/qa')
+    if: contains(github.base_ref, 'qa')
     steps:
     - name: Start deployment
       uses: bobheadxi/deployments@master
