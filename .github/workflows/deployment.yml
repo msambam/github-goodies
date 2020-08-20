@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Extract Text from Labels
+        uses: ./.github/actions/extract-text-from-labels
+        with:
+          pattern: ^deploy:([^$]+)$
+          group: 1
       - name: Extract Environment Name
         env:
           PR_HEAD: ${{ github.base_ref }}
         run: echo "##[set-output name=environment;]$(echo ${PR_HEAD#refs/heads/} | tr / -)"
-      - name: Extract Text from Labels
-        uses: /.github/actions/extract-text-from-labels
-        with:
-          pattern: ^deploy:([^$]+)$
-          group: 1
 
   deploy-to-qa:
     needs: pre-deploy
