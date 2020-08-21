@@ -21,7 +21,16 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.201
+    - name: Setup Report Generator Tool
+      run: dotnet tool install --global dotnet-reportgenerator-globaltool
     - name: Build with dotnet
       run: dotnet build ./eShopOnWeb.sln --configuration Release
     - name: Test with dotnet
-      run: dotnet test ./eShopOnWeb.sln --configuration Release --collect "Code Coverage" --settings CodeCoverage.runsettings 
+      run: dotnet test ./eShopOnWeb.sln --configuration Release --collect:"XPlat code coverage"
+    - name: Generate Code Coverage Report
+      run: reportgenerator "-reports:tests\*\*\*\coverage.cobertura.xml" "-targetdir:coverage-reports"
+    - name: Update Code Coverage Report
+      uses: actions/upload-artifact@master
+      with:
+          name: Coverage
+          path: coverage-reports
