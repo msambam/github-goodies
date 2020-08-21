@@ -1,5 +1,5 @@
 {
-  "name": "check-pr-labels",
+  "name": "extract-text-from-labels",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

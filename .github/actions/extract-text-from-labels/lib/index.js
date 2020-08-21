@@ -33,18 +33,33 @@ const github = __importStar(require("@actions/github"));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const token = core.getInput('GITHUB_TOKEN', { required: true });
-            const client = github.getOctokit(token);
-            const context = github.context;
-            const labels = yield client.issues.listLabelsOnIssue({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo
-            });
+            const token = core.getInput('github-token', { required: true });
+            const pattern = core.getInput('pattern', { required: true });
+            const group = core.getInput('group', { required: true });
+            const labels = yield listLabelsOnIssue(token);
+            let substrings = extractTextFromLabels(labels, new RegExp(pattern), Number(group));
+            core.setOutput("substrings", substrings);
         }
         catch (error) {
             core.setFailed(error.message);
         }
     });
+}
+function listLabelsOnIssue(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let client = github.getOctokit(token);
+        const opts = client.issues.listLabelsOnIssue.endpoint.merge(Object.assign(Object.assign({}, github.context.repo), { issue_number: github.context.issue.number }));
+        return yield client.paginate(opts);
+    });
+}
+function extractTextFromLabels(labels, pattern, index) {
+    let substrings = [];
+    for (const label of labels) {
+        var match = label.name.match(pattern);
+        if (match && index <= match.length - 1 && substrings.findIndex(match[index]) > 0) {
+            substrings.push(match[index]);
+        }
+    }
+    return substrings;
 }
 run();
