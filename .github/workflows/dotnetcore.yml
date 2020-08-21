@@ -2,7 +2,9 @@ name: eShopOnWeb Build and Test
 
 on:
   push:
-    branches: [master,]
+    branches:
+      - master
+      - dev
     paths-ignore:
       - '.github/**'
   pull_request:
