@@ -2,23 +2,44 @@ name: eShopOnWeb Build and Test
 
 on:
   push:
-    branches: [master,]
+    branches:
+      - master
+      - dev
     paths-ignore:
       - '.github/**'
   pull_request:
     branches: [master, qa, prod]
+  workflow_dispatch:
 
 jobs:
   build:
     name: eShopOnWeb - Build and Test
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.201
+        dotnet-version: 3.1.401
+    - name: Setup Report Generator Tool
+      run: dotnet tool install --global dotnet-reportgenerator-globaltool
+    - uses: actions/checkout@v2
     - name: Build with dotnet
       run: dotnet build ./eShopOnWeb.sln --configuration Release
     - name: Test with dotnet
-      run: dotnet test ./eShopOnWeb.sln --configuration Release
+      run: dotnet test ./eShopOnWeb.sln --configuration Release --collect:"XPlat code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,lcov
+    - name: Generate Code Coverage Report
+      run: reportgenerator "-reports:tests\*\*\*\coverage.cobertura.xml" "-targetdir:coverage-reports"
+    - name: Update Code Coverage Report
+      uses: actions/upload-artifact@master
+      with:
+          name: Coverage
+          path: coverage-reports
+    - name: Merge info files into one
+      if: ${{ github.event_name == 'pull_request' }}
+      run: Get-ChildItem -Recurse -Filter "*.info" | Get-Content | Add-Content -Path "lcov.info"
+    - name: Publish Code Coverage to Pull Request
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: romeovs/lcov-reporter-action@v0.2.16
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        lcov-file: lcov.info

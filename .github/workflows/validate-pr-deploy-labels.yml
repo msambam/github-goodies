@@ -2,6 +2,9 @@ name: Validate PR deployment labels
 
 on:
   pull_request:
+    branches:
+      - qa
+      - prod
     types:
       - labeled
       - unlabeled

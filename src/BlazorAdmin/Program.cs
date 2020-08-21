@@ -39,7 +39,7 @@ namespace BlazorAdmin
 
             await ClearLocalStorageCache(builder.Services);
 
-            builder.Build().RunAsync();
+            await builder.Build().RunAsync();
         }
 
         private static async Task ClearLocalStorageCache(IServiceCollection services)

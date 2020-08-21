@@ -101,6 +101,28 @@ Included items must then not match any entries in the exclude list to remain inc
           </CodeCoverage>
         </Configuration>
       </DataCollector>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>          
+          <Exclude>[coverlet.*.tests?]*,[*]Coverlet.Core*</Exclude> <!-- [Assembly-Filter]Type-Filter -->
+          <Include>[coverlet.*]*,[*]Coverlet.Core*</Include> <!-- [Assembly-Filter]Type-Filter -->
+          <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
+          <!-- <ExcludeByFile>**/dir1/class1.cs,**/dir2/*.cs,**/dir3/**/*.cs,</ExcludeByFile> Globbing filter -->
+          <!-- <IncludeDirectory>../dir1/,../dir2/,</IncludeDirectory> -->
+          <!-- <SingleHit>false</SingleHit>
+          <UseSourceLink>true</UseSourceLink>
+          <IncludeTestAssembly>true</IncludeTestAssembly>
+          <SkipAutoProps>true</SkipAutoProps> -->
+        </Configuration>
+      </DataCollector>
     </DataCollectors>
   </DataCollectionRunSettings>
+  <InProcDataCollectionRunSettings>
+    <InProcDataCollectors>
+      <InProcDataCollector assemblyQualifiedName="Coverlet.Collector.DataCollection.CoverletInProcDataCollector, coverlet.collector, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null"
+                     friendlyName="XPlat Code Coverage"
+                     enabled="True"
+                     codebase="coverlet.collector.dll" />
+    </InProcDataCollectors>
+  </InProcDataCollectionRunSettings>
 </RunSettings>
