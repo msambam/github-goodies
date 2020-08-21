@@ -9,6 +9,7 @@ on:
       - '.github/**'
   pull_request:
     branches: [master, qa, prod]
+  workflow_dispatch:
 
 jobs:
   build:
