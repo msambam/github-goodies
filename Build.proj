@@ -1,0 +1,37 @@
+<Project DefaultTargets="Clean">
+  <PropertyGroup>
+    <SrcRoot>$(MSBuildThisFileDirectory)</SrcRoot>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">$(SrcRoot)\</SolutionDir>
+    <Configuration Condition="$(Configuration) == ''">Release</Configuration>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <BinariesFolder>$(SrcRoot)bin</BinariesFolder>
+    <CommonIntermediateOutputRoot>$(SrcRoot)obj\</CommonIntermediateOutputRoot>
+    <BaseIntermediateOutputPath>$(CommonIntermediateOutputRoot)$(Configuration)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <CommonOutputDirectory>$(BinariesFolder)\$(Configuration)</CommonOutputDirectory>
+    <BuildToCommonOutputDirectory Condition="'$(BuildToCommonOutputDirectory)' == ''">true</BuildToCommonOutputDirectory>
+    <OutputPath Condition="'$(OutputPath)' == ''">$(BinariesFolder)\$(Configuration)\$(MSBuildProjectName)</OutputPath>
+    <OutputPath Condition="'$(BuildToCommonOutputDirectory)' == 'true'">$(CommonOutputDirectory)\</OutputPath>
+    <OutDir>$(OutputPath)</OutDir>
+    <ZipFile Condition="'$(ZipFile)' == '' Or '$(ZipFile)' == '*Undefined*'">output</ZipFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectFiles Include="src\**\*.csproj" />
+  </ItemGroup>
+  <Target Name="Clean"
+        Condition=" '$(_InvalidConfigurationWarning)' != 'true' "
+        DependsOnTargets="$(CleanDependsOn)" />
+  <Target Name="Build" AfterTargets="Clean">
+    <MSBuild Projects="@(ProjectFiles)" Targets="Build" Properties="Configuration=$(Configuration);OutDir=$(OutDir.TrimEnd('\'))\%(Filename)\"/>   
+  </Target>
+  <Target Name="ZipOutputPath" AfterTargets="Build" Condition="'$(ZipOutputPath)' != ''">
+      <MakeDir
+            Directories="$(ZipOutputPath)" Condition="!Exists('$(ZipOutputPath)')"/>
+      <ZipDirectory
+          SourceDirectory="$(OutDir)"
+          DestinationFile="$(ZipOutputPath.TrimEnd('\'))\$(ZipFile).zip" />
+  </Target>
+</Project>
