@@ -26,7 +26,7 @@ jobs:
     - name: Build with dotnet
       run: dotnet build ./eShopOnWeb.sln --configuration Release
     - name: Test with dotnet
-      run: dotnet test ./eShopOnWeb.sln --configuration Release --collect:"XPlat code coverage"
+      run: dotnet test ./eShopOnWeb.sln --configuration Release --collect:"XPlat code coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,lcov
     - name: Generate Code Coverage Report
       run: reportgenerator "-reports:tests\*\*\*\coverage.cobertura.xml" "-targetdir:coverage-reports"
     - name: Update Code Coverage Report
@@ -34,3 +34,12 @@ jobs:
       with:
           name: Coverage
           path: coverage-reports
+    - name: Merge info files into one
+      if: ${{ github.event_name == 'pull_request' }}
+      run: Get-ChildItem -Recurse -Filter "*.info" | Get-Content | Add-Content -Path "lcov.info"
+    - name: Publish Code Coverage to Pull Request
+      if: ${{ github.event_name == 'pull_request' }}
+      uses: romeovs/lcov-reporter-action@v0.2.16
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        lcov-file: lcov.info
