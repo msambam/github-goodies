@@ -25,7 +25,7 @@ jobs:
   deploy-to-qa:
     needs: pre-deploy
     runs-on: ubuntu-latest
-    if: ${{ env.PR_HEAD == 'qa' }}
+    if: env.PR_HEAD == 'qa'
     strategy:
       matrix:
         applications: ${{ fromJson(needs.pre-deploy.outputs.substrings) }}
