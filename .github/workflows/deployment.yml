@@ -11,24 +11,29 @@ on:
 jobs:
   pre-deploy:
     runs-on: ubuntu-latest
+    outputs:
+      applications: ${{ steps.extract-app-names.outputs.substrings}}
+      environment: ${{ steps.extract-env-name.outputs.environment }}
     steps:
-      - name: Extract text from labels
+      - id: extract-app-names
+        name: Extract text from labels
         uses: martins-vds/extract-text-from-labels-action@v0.0.1-alpha
         with:
           pattern: ^deploy:([^$]+)$
           group: 1
-      - name: Extract Environment Name
+      - id: extract-env-name
+        name: Extract Environment Name
         env:
           PR_HEAD: ${{ github.base_ref }}
-        run: echo "##[set-output name=environment;]$(echo ${PR_HEAD#refs/heads/} | tr / -)"
+        run: echo "::set-output name=environment::$(echo ${PR_HEAD#refs/heads/} | tr / -)"
 
   deploy-to-qa:
     needs: pre-deploy
     runs-on: ubuntu-latest
-    if: format('{0}', ${{ env.PR_HEAD }}) == 'qa'
+    if: needs.pre-deploy.outputs.environment == 'qa'
     strategy:
       matrix:
-        applications: ${{ fromJson(needs.pre-deploy.outputs.substrings) }}
+        applications: ${{ fromJson(needs.pre-deploy.outputs.applications) }}
     steps:
     - name: Start deployment
       uses: bobheadxi/deployments@master
