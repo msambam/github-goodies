@@ -12,9 +12,8 @@ jobs:
   pre-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Extract Text from Labels
-        uses: ./.github/actions/extract-text-from-labels
+      - name: Extract text from labels
+        uses: martins-vds/extract-text-from-labels-action@v0.0.1-alpha
         with:
           pattern: ^deploy:([^$]+)$
           group: 1
