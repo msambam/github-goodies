@@ -25,10 +25,10 @@ jobs:
   deploy-to-qa:
     needs: pre-deploy
     runs-on: ubuntu-latest
-    if: ${{ needs.pre-deploy.outputs.environment == 'qa' }}
+    if: ${{ env.PR_HEAD == 'qa' }}
     strategy:
       matrix:
-        applications: ${{ needs.pre-deploy.outputs.substrings }}
+        applications: ${{ fromJson(needs.pre-deploy.outputs.substrings) }}
     steps:
     - name: Start deployment
       uses: bobheadxi/deployments@master
